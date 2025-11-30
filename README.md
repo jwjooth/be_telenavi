@@ -1,59 +1,319 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+Telenavi Todo API – Backend Documentation
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A RESTful backend service built with Laravel 12 to support Todo management operations, including advanced filtering and Excel report generation.
+Backend ini dibuat untuk memenuhi kebutuhan aplikasi Telenavi dengan arsitektur yang scalable, maintainable, dan siap untuk production-level workflow.
 
-## About Laravel
+Table of Contents
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+Overview
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+Tech Stack
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+Features
 
-## Learning Laravel
+Requirements
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+Installation
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+Environment Configuration
 
-## Laravel Sponsors
+Database Schema
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+Project Structure
 
-### Premium Partners
+API Endpoints
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+Validation Rules
 
-## Contributing
+Excel Export
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+Error Handling
 
-## Code of Conduct
+Running the Application
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Overview
 
-## Security Vulnerabilities
+Telenavi Todo API menyediakan backend services untuk:
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Pembuatan Todo
 
-## License
+Pengambilan data Todo dengan filter lengkap
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Export Excel lengkap dengan summary
+
+Pengelolaan data secara RESTful
+
+Aplikasi ini dirancang mengikuti prinsip clean code, separation of concerns, dan standard API response formatting.
+
+Tech Stack
+Component	Version
+PHP	8.3.28
+Laravel	12.x
+MySQL	8.0+
+Maatwebsite/Excel	3.1.x
+Features
+
+Create, Read, Update, Delete Todos
+
+Advanced query filtering:
+
+title (LIKE)
+
+assignee (multiple values)
+
+priority (enum filter)
+
+status (enum filter)
+
+date range
+
+time_tracked range
+
+Excel export with summary row
+
+Strong request validation
+
+Professional error format
+
+Consistent API contracts
+
+Requirements
+
+PHP 8.3+
+
+Composer
+
+MySQL 8.0+
+
+Laragon / XAMPP / Docker (optional)
+
+Postman (untuk testing)
+
+Installation
+
+Clone repository:
+
+git clone <your-backend-repository-url>
+cd be_telenavi
+
+
+Install dependencies:
+
+composer install
+
+
+Copy environment file:
+
+cp .env.example .env
+
+
+Generate app key:
+
+php artisan key:generate
+
+
+Run migrations:
+
+php artisan migrate
+
+
+Start development server:
+
+php artisan serve
+
+
+Backend berjalan di:
+http://localhost:8000
+
+Environment Configuration
+
+Edit file .env:
+
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=todo_db
+DB_USERNAME=root
+DB_PASSWORD=
+
+
+Jika menggunakan Laragon, biarkan default.
+
+Database Schema
+Table: todos
+Field	Type	Nullable	Default	Description
+id	bigint	❌	AUTO	Primary Key
+title	string	❌	-	Judul Todo
+assignee	string	✔️	NULL	Orang yang ditugaskan
+due_date	date	❌	-	Deadline tugas
+time_tracked	int	❌	0	Waktu yang sudah dihabiskan
+status	enum	❌	pending	Status pekerjaan
+priority	enum	❌	-	Prioritas tugas
+created_at	timestamp	❌	current	Creation time
+updated_at	timestamp	❌	current	Update time
+
+SQL schema (migrasi):
+
+Schema::create('todos', function (Blueprint $table) {
+    $table->id();
+    $table->string('title');
+    $table->string('assignee')->nullable();
+    $table->date('due_date');
+    $table->integer('time_tracked')->default(0);
+    $table->enum('status', ['pending','open','in_progress','completed'])->default('pending');
+    $table->enum('priority', ['low','medium','high']);
+    $table->timestamps();
+});
+
+Project Structure
+be_telenavi/
+├── app/
+│   ├── Models/
+│   │   └── Todo.php
+│   ├── Http/
+│   │   ├── Controllers/
+│   │   │   └── TodoController.php
+│   │   └── Requests/
+│   ├── Exports/
+│   │   └── TodosExport.php
+│   └── Traits/
+│       └── ApiResponse.php
+├── routes/
+│   └── api.php
+├── database/
+│   ├── migrations/
+│   └── seeders/
+├── storage/
+├── .env
+└── composer.json
+
+API Endpoints
+1. Create Todo
+
+POST /api/todos
+
+Request Body:
+
+{
+  "title": "Belajar Laravel",
+  "assignee": "Jordan",
+  "due_date": "2025-12-31",
+  "priority": "high"
+}
+
+
+Success Response (201):
+
+{
+  "success": true,
+  "data": {
+    "id": 1,
+    "title": "Belajar Laravel",
+    "assignee": "Jordan",
+    "due_date": "2025-12-31",
+    "time_tracked": 0,
+    "status": "pending",
+    "priority": "high"
+  },
+  "message": "Todo created successfully"
+}
+
+2. Get Todos (with Filtering)
+
+GET /api/todos
+
+Supported filters:
+
+Parameter	Type	Example
+title	string	?title=laravel
+assignee	list	?assignee=john,alice
+status	list	?status=pending,in_progress
+priority	list	?priority=high,low
+start	date	?start=2025-01-01
+end	date	?end=2025-12-31
+min	number	?min=2
+max	number	?max=10
+
+Example request:
+
+GET /api/todos?priority=high&status=pending,in_progress&start=2025-01-01&end=2025-12-31
+
+3. Export Excel
+
+GET /api/todos/export
+
+Response:
+
+Automatically downloads todo-report.xlsx
+
+Contains:
+
+Semua data Todo
+
+Summary row: total todos & total time tracked
+
+Gunakan Send and Download di Postman.
+
+Validation Rules
+Create Todo
+Field	Rules
+title	required, string, max:255
+assignee	nullable, string
+due_date	required, date, after_or_equal:today
+priority	required, in:low,medium,high
+status	optional (default: pending)
+Excel Export
+
+Menggunakan Maatwebsite/Excel:
+
+return Excel::download(new TodosExport($todos), 'todo-report.xlsx');
+
+
+Kelebihan:
+
+Ringan
+
+Mudah di-maintain
+
+Cocok untuk enterprise reporting
+
+Error Handling
+
+Seluruh error diformat secara konsisten:
+
+Contoh 422 Validation Error:
+
+{
+  "success": false,
+  "message": "Validation failed",
+  "errors": {
+    "due_date": [
+      "The due date must be a date after or equal to today."
+    ]
+  }
+}
+
+
+Contoh 404 Error:
+
+{
+  "success": false,
+  "message": "Todo not found"
+}
+
+Running the Application
+
+Development server:
+
+php artisan serve
+
+
+Testing with Postman:
+
+POST /api/todos
+
+GET /api/todos
+
+GET /api/todos/export
+
+Excel export menggunakan Send and Download.
