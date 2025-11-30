@@ -6,6 +6,7 @@ use App\Models\Todo;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\TodosExport;
+use Illuminate\Support\Facades\Log;
 
 class TodoController extends Controller
 {
@@ -22,10 +23,19 @@ class TodoController extends Controller
             $todo = Todo::create($validated);
 
             Log::info('Todo created successfully', ['id' => $todo->id]);
-            return ApiResponse::success($todo, 'Todo created successfully', 201);
+
+            // GANTI ApiResponse dengan response()->json() langsung
+            return response()->json([
+                'success' => true,
+                'data' => $todo,
+                'message' => 'Todo created successfully'
+            ], 201);
         } catch (\Exception $e) {
             Log::error('Error creating todo', ['error' => $e->getMessage()]);
-            return ApiResponse::error('Failed to create todo', 500);
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to create todo: ' . $e->getMessage()
+            ], 500);
         }
     }
 
@@ -74,34 +84,28 @@ class TodoController extends Controller
         try {
             $query = Todo::query();
 
-            // Filter: title
             if ($request->has('title')) {
                 $query->where('title', 'like', '%' . $request->title . '%');
             }
 
-            // Filter: assignee
             if ($request->has('assignee')) {
                 $assignees = explode(',', $request->assignee);
                 $query->whereIn('assignee', $assignees);
             }
 
-            // Filter: due_date
             if ($request->has('start') && $request->has('end')) {
                 $query->whereBetween('due_date', [$request->start, $request->end]);
             }
 
-            // Filter: time_tracked
             if ($request->has('min') && $request->has('max')) {
                 $query->whereBetween('time_tracked', [$request->min, $request->max]);
             }
 
-            // Filter: status
             if ($request->has('status')) {
                 $statuses = explode(',', $request->status);
                 $query->whereIn('status', $statuses);
             }
 
-            // Filter: priority
             if ($request->has('priority')) {
                 $priorities = explode(',', $request->priority);
                 $query->whereIn('priority', $priorities);
@@ -116,6 +120,5 @@ class TodoController extends Controller
                 'message' => 'Error exporting todos: ' . $e->getMessage()
             ], 500);
         }
-        exit;
     }
 }
