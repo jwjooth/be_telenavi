@@ -1,159 +1,162 @@
-Telenavi Todo API – Backend Documentation
+# Telenavi Todo API – Backend Documentation
 
 A RESTful backend service built with Laravel 12 to support Todo management operations, including advanced filtering and Excel report generation.
+
 Backend ini dibuat untuk memenuhi kebutuhan aplikasi Telenavi dengan arsitektur yang scalable, maintainable, dan siap untuk production-level workflow.
 
-Table of Contents
+## Table of Contents
 
-Overview
+- [Overview](#overview)
+- [Tech Stack](#tech-stack)
+- [Features](#features)
+- [Requirements](#requirements)
+- [Installation](#installation)
+- [Environment Configuration](#environment-configuration)
+- [Database Schema](#database-schema)
+- [Project Structure](#project-structure)
+- [API Endpoints](#api-endpoints)
+- [Validation Rules](#validation-rules)
+- [Excel Export](#excel-export)
+- [Error Handling](#error-handling)
+- [Running the Application](#running-the-application)
 
-Tech Stack
+---
 
-Features
-
-Requirements
-
-Installation
-
-Environment Configuration
-
-Database Schema
-
-Project Structure
-
-API Endpoints
-
-Validation Rules
-
-Excel Export
-
-Error Handling
-
-Running the Application
-
-Overview
+## Overview
 
 Telenavi Todo API menyediakan backend services untuk:
 
-Pembuatan Todo
-
-Pengambilan data Todo dengan filter lengkap
-
-Export Excel lengkap dengan summary
-
-Pengelolaan data secara RESTful
+- Pembuatan Todo
+- Pengambilan data Todo dengan filter lengkap
+- Export Excel lengkap dengan summary
+- Pengelolaan data secara RESTful
 
 Aplikasi ini dirancang mengikuti prinsip clean code, separation of concerns, dan standard API response formatting.
 
-Tech Stack
-Component	Version
-PHP	8.3.28
-Laravel	12.x
-MySQL	8.0+
-Maatwebsite/Excel	3.1.x
-Features
+---
 
-Create, Read, Update, Delete Todos
+## Tech Stack
 
-Advanced query filtering:
+| Component | Version |
+|-----------|---------|
+| PHP | 8.3.28 |
+| Laravel | 12.x |
+| MySQL | 8.0+ |
+| Maatwebsite/Excel | 3.1.x |
 
-title (LIKE)
+---
 
-assignee (multiple values)
+## Features
 
-priority (enum filter)
+✅ Create, Read, Update, Delete Todos
 
-status (enum filter)
+✅ Advanced query filtering:
+- title (LIKE)
+- assignee (multiple values)
+- priority (enum filter)
+- status (enum filter)
+- date range
+- time_tracked range
 
-date range
+✅ Excel export with summary row
 
-time_tracked range
+✅ Strong request validation
 
-Excel export with summary row
+✅ Professional error format
 
-Strong request validation
+✅ Consistent API contracts
 
-Professional error format
+---
 
-Consistent API contracts
+## Requirements
 
-Requirements
+- PHP 8.3+
+- Composer
+- MySQL 8.0+
+- Laragon / XAMPP / Docker (optional)
+- Postman (untuk testing)
 
-PHP 8.3+
+---
 
-Composer
+## Installation
 
-MySQL 8.0+
+### Clone repository:
 
-Laragon / XAMPP / Docker (optional)
-
-Postman (untuk testing)
-
-Installation
-
-Clone repository:
-
+```bash
 git clone <your-backend-repository-url>
 cd be_telenavi
+```
 
+### Install dependencies:
 
-Install dependencies:
-
+```bash
 composer install
+```
 
+### Copy environment file:
 
-Copy environment file:
-
+```bash
 cp .env.example .env
+```
 
+### Generate app key:
 
-Generate app key:
-
+```bash
 php artisan key:generate
+```
 
+### Run migrations:
 
-Run migrations:
-
+```bash
 php artisan migrate
+```
 
+### Start development server:
 
-Start development server:
-
+```bash
 php artisan serve
+```
 
+Backend berjalan di: **http://localhost:8000**
 
-Backend berjalan di:
-http://localhost:8000
+---
 
-Environment Configuration
+## Environment Configuration
 
-Edit file .env:
+Edit file `.env`:
 
+```env
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
 DB_PORT=3306
 DB_DATABASE=todo_db
 DB_USERNAME=root
 DB_PASSWORD=
-
+```
 
 Jika menggunakan Laragon, biarkan default.
 
-Database Schema
-Table: todos
-Field	Type	Nullable	Default	Description
-id	bigint	❌	AUTO	Primary Key
-title	string	❌	-	Judul Todo
-assignee	string	✔️	NULL	Orang yang ditugaskan
-due_date	date	❌	-	Deadline tugas
-time_tracked	int	❌	0	Waktu yang sudah dihabiskan
-status	enum	❌	pending	Status pekerjaan
-priority	enum	❌	-	Prioritas tugas
-created_at	timestamp	❌	current	Creation time
-updated_at	timestamp	❌	current	Update time
+---
 
-SQL schema (migrasi):
+## Database Schema
 
+### Table: todos
+
+| Field | Type | Nullable | Default | Description |
+|-------|------|----------|---------|-------------|
+| id | bigint | ❌ | AUTO | Primary Key |
+| title | string | ❌ | - | Judul Todo |
+| assignee | string | ✅ | NULL | Orang yang ditugaskan |
+| due_date | date | ❌ | - | Deadline tugas |
+| time_tracked | int | ❌ | 0 | Waktu yang sudah dihabiskan |
+| status | enum | ❌ | pending | Status pekerjaan |
+| priority | enum | ❌ | - | Prioritas tugas |
+| created_at | timestamp | ❌ | current | Creation time |
+| updated_at | timestamp | ❌ | current | Update time |
+
+### SQL schema (migrasi):
+
+```php
 Schema::create('todos', function (Blueprint $table) {
     $table->id();
     $table->string('title');
@@ -164,8 +167,13 @@ Schema::create('todos', function (Blueprint $table) {
     $table->enum('priority', ['low','medium','high']);
     $table->timestamps();
 });
+```
 
-Project Structure
+---
+
+## Project Structure
+
+```
 be_telenavi/
 ├── app/
 │   ├── Models/
@@ -186,24 +194,30 @@ be_telenavi/
 ├── storage/
 ├── .env
 └── composer.json
+```
 
-API Endpoints
-1. Create Todo
+---
 
-POST /api/todos
+## API Endpoints
 
-Request Body:
+### 1. Create Todo
 
+**Endpoint:** `POST /api/todos`
+
+**Request Body:**
+
+```json
 {
   "title": "Belajar Laravel",
   "assignee": "Jordan",
   "due_date": "2025-12-31",
   "priority": "high"
 }
+```
 
+**Success Response (201):**
 
-Success Response (201):
-
+```json
 {
   "success": true,
   "data": {
@@ -217,72 +231,107 @@ Success Response (201):
   },
   "message": "Todo created successfully"
 }
+```
 
-2. Get Todos (with Filtering)
+---
 
-GET /api/todos
+### 2. Get Todos (with Filtering)
 
-Supported filters:
+**Endpoint:** `GET /api/todos`
 
-Parameter	Type	Example
-title	string	?title=laravel
-assignee	list	?assignee=john,alice
-status	list	?status=pending,in_progress
-priority	list	?priority=high,low
-start	date	?start=2025-01-01
-end	date	?end=2025-12-31
-min	number	?min=2
-max	number	?max=10
+**Supported filters:**
 
-Example request:
+| Parameter | Type | Example |
+|-----------|------|---------|
+| title | string | ?title=laravel |
+| assignee | list | ?assignee=john,alice |
+| status | list | ?status=pending,in_progress |
+| priority | list | ?priority=high,low |
+| start | date | ?start=2025-01-01 |
+| end | date | ?end=2025-12-31 |
+| min | number | ?min=2 |
+| max | number | ?max=10 |
 
+**Example request:**
+
+```bash
 GET /api/todos?priority=high&status=pending,in_progress&start=2025-01-01&end=2025-12-31
+```
 
-3. Export Excel
+**Success Response (200):**
 
-GET /api/todos/export
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": 1,
+      "title": "Belajar Laravel",
+      "assignee": "Jordan",
+      "due_date": "2025-12-31",
+      "time_tracked": 5,
+      "status": "in_progress",
+      "priority": "high"
+    }
+  ],
+  "total": 1
+}
+```
 
-Response:
+---
 
-Automatically downloads todo-report.xlsx
+### 3. Export Excel
+
+**Endpoint:** `GET /api/todos/export`
+
+**Response:**
+
+Automatically downloads `todo-report.xlsx`
 
 Contains:
-
-Semua data Todo
-
-Summary row: total todos & total time tracked
+- Semua data Todo
+- Summary row: total todos & total time tracked
 
 Gunakan Send and Download di Postman.
 
-Validation Rules
-Create Todo
-Field	Rules
-title	required, string, max:255
-assignee	nullable, string
-due_date	required, date, after_or_equal:today
-priority	required, in:low,medium,high
-status	optional (default: pending)
-Excel Export
+---
+
+## Validation Rules
+
+### Create Todo
+
+| Field | Rules |
+|-------|-------|
+| title | required, string, max:255 |
+| assignee | nullable, string |
+| due_date | required, date, after_or_equal:today |
+| priority | required, in:low,medium,high |
+| status | optional (default: pending) |
+
+---
+
+## Excel Export
 
 Menggunakan Maatwebsite/Excel:
 
+```php
 return Excel::download(new TodosExport($todos), 'todo-report.xlsx');
+```
 
+**Kelebihan:**
+- Ringan
+- Mudah di-maintain
+- Cocok untuk enterprise reporting
 
-Kelebihan:
+---
 
-Ringan
-
-Mudah di-maintain
-
-Cocok untuk enterprise reporting
-
-Error Handling
+## Error Handling
 
 Seluruh error diformat secara konsisten:
 
-Contoh 422 Validation Error:
+### Contoh 422 Validation Error:
 
+```json
 {
   "success": false,
   "message": "Validation failed",
@@ -292,28 +341,48 @@ Contoh 422 Validation Error:
     ]
   }
 }
+```
 
+### Contoh 404 Error:
 
-Contoh 404 Error:
-
+```json
 {
   "success": false,
   "message": "Todo not found"
 }
+```
 
-Running the Application
+---
 
-Development server:
+## Running the Application
 
+### Development server:
+
+```bash
 php artisan serve
+```
 
+### Testing with Postman:
 
-Testing with Postman:
-
-POST /api/todos
-
-GET /api/todos
-
-GET /api/todos/export
+- `POST /api/todos` - Create Todo
+- `GET /api/todos` - Get all Todos
+- `GET /api/todos?priority=high` - Get with filter
+- `GET /api/todos/export` - Export to Excel
 
 Excel export menggunakan Send and Download.
+
+---
+
+## Author
+
+**Jordan Theovandy**
+
+**Telenavi - Fullstack Internship Test**
+
+**November 2025**
+
+---
+
+## License
+
+This project is part of Telenavi internship program. All rights reserved.
